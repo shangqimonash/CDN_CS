@@ -1,0 +1,43 @@
+enclave {
+
+    from "sgx_tstdc.edl" import *;
+    
+    
+    trusted {
+
+        public void ecall_uploadVideoLength(int vId,int videoRangeLength);
+        public void ecall_uploadVideoInRange(int videoId, int rangeIndex, 
+                        [user_check] char *content,int content_length,
+                        [user_check] void *obliv_ret_metaReturn_p1,
+                        [user_check] void *obliv_ret_metaReturn_p2,
+                        [user_check] void *obliv_ret_edge_request,
+                        [user_check] void *obliv_batch_evict_p1,
+                        [user_check] void *obliv_batch_evict_p2);
+        
+        public void ecall_fetchVideo(int videoId,
+                        [user_check] void *per_re_p1,
+                        [user_check] void *per_re_p2,
+                        [user_check] void *pri_range_ret_p1,
+                        [user_check] void *pri_range_ret_p2 );
+        
+        public void ecall_reset();
+        
+        public void ecall_initial(int oram_video_map_memory, int oram_block_state_bytes, int roram_tracker_bytes);
+
+    };
+
+    untrusted {
+
+        void ocall_print_string([in, string] const char *str);
+        void ocall_init_rORAM_Stash(int rIndex, uint32_t stashSize, uint32_t range_Support);
+        void ocall_Stash_upload([in, count= data_size, size=meta_enc_block_size] const void *data_arr,int data_size, int meta_enc_block_size, int oramIndex);
+
+        void ocall_oblivRet(int oramIndex, int batch_size);
+        void ocall_oblivEvict_pushCE(int treeIndex, int batch_size);
+        void ocall_oblivEvict_pushStash(int treeIndex);
+        void ocall_oblivPerRe(int treeIndex, int stash_size);
+        void ocall_oblivPriRangeRetrieve(int treeIndex, int startingIndex, int rangeSize);
+
+
+    };
+};
